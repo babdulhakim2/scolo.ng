@@ -2,6 +2,10 @@ import { motion, AnimatePresence } from "motion/react";
 import { Terminal, ArrowRight, Landmark, Mic, Globe, LayoutGrid, Cpu, Users, Mail, RefreshCw, Loader2 } from "lucide-react";
 import { GoogleGenAI } from "@google/genai";
 import { useState, useEffect } from "react";
+import { Link, Route, Routes, useLocation } from "react-router-dom";
+import CookieConsentBanner, { openCookieSettings } from "./components/CookieConsentBanner";
+import PrivacyPage from "./pages/Privacy";
+import TermsPage from "./pages/Terms";
 
 const ProductImage = ({ prompt, alt, location }: { prompt: string; alt: string; location: string }) => {
   const [imageUrl, setImageUrl] = useState<string | null>(null);
@@ -133,7 +137,9 @@ const Navbar = () => (
   <header className="fixed top-0 w-full z-50 flex justify-between items-center px-8 py-6 bg-surface/80 backdrop-blur-md border-b border-outline-variant/10">
     <div className="flex items-center gap-3">
       <Terminal className="text-primary w-6 h-6" />
-      <span className="text-2xl font-bold font-serif text-primary tracking-tight">SCOLO AI</span>
+      <Link to="/" className="text-2xl font-bold font-serif text-primary tracking-tight hover:opacity-90 transition-opacity">
+        SCOLO AI
+      </Link>
     </div>
     <nav className="hidden md:flex gap-8 items-center">
       {["Products", "Services", "Traction"].map((item) => (
@@ -166,7 +172,7 @@ const Hero = () => (
           transition={{ duration: 0.8 }}
           className="font-serif text-5xl md:text-8xl leading-tight font-extrabold tracking-tight text-white"
         >
-          We build AI that works in Nigeria's <span className="italic text-primary">real conditions.</span>
+          We build AI that works in <span className="italic text-primary">real conditions.</span>
         </motion.h1>
       </div>
       <div className="md:col-span-4 pb-4">
@@ -179,12 +185,18 @@ const Hero = () => (
           A technical team shipping AI products and providing deep expertise since 2025.
         </motion.p>
         <div className="mt-8 flex flex-col sm:flex-row gap-4">
-          <button className="px-8 py-4 bg-primary text-on-primary font-bold text-lg hover:bg-primary-container transition-colors">
+          <a
+            href="#products"
+            className="inline-flex items-center justify-center px-8 py-4 bg-primary text-on-primary font-bold text-lg hover:bg-primary-container transition-colors"
+          >
             Explore Products
-          </button>
-          <button className="px-8 py-4 bg-transparent border border-outline text-white font-bold text-lg hover:bg-surface-container-high transition-colors">
+          </a>
+          <a
+            href="#contact"
+            className="inline-flex items-center justify-center px-8 py-4 bg-transparent border border-outline text-white font-bold text-lg hover:bg-surface-container-high transition-colors"
+          >
             Contact Us
-          </button>
+          </a>
         </div>
       </div>
     </div>
@@ -355,8 +367,8 @@ const Contact = () => (
         For custom AI development, consulting, and government solutions inquiries.
       </p>
       <div className="inline-block border-b-2 border-primary pb-2">
-        <a href="mailto:hello@scolo.ai" className="font-serif text-3xl md:text-5xl font-bold text-primary hover:opacity-80 transition-opacity">
-          hello@scolo.ai
+        <a href="mailto:hakim@scolo.ng" className="font-serif text-3xl md:text-5xl font-bold text-primary hover:opacity-80 transition-opacity">
+          hakim@scolo.ng
         </a>
       </div>
     </div>
@@ -372,16 +384,31 @@ const Footer = () => (
       </p>
     </div>
     <nav className="flex flex-wrap justify-center gap-6">
-      {["Products", "Services", "Traction", "Privacy", "Terms", "Cookie Consent"].map((link) => (
-        <a key={link} href="#" className="font-mono text-[10px] uppercase tracking-widest text-on-surface-variant hover:text-primary underline transition-all">
-          {link}
-        </a>
-      ))}
+    
+      <a href="#services" className="font-mono text-[10px] uppercase tracking-widest text-on-surface-variant hover:text-primary underline transition-all">
+        Services
+      </a>
+    
+      <Link to="/privacy" className="font-mono text-[10px] uppercase tracking-widest text-on-surface-variant hover:text-primary underline transition-all">
+        Privacy
+      </Link>
+      <Link to="/terms" className="font-mono text-[10px] uppercase tracking-widest text-on-surface-variant hover:text-primary underline transition-all">
+        Terms
+      </Link>
+     
     </nav>
   </footer>
 );
 
-export default function App() {
+function ScrollToTopOnRouteChange() {
+  const location = useLocation();
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: "instant" as ScrollBehavior });
+  }, [location.pathname]);
+  return null;
+}
+
+function HomePage() {
   return (
     <div className="min-h-screen selection:bg-primary selection:text-on-primary">
       <Navbar />
@@ -394,5 +421,34 @@ export default function App() {
       </main>
       <Footer />
     </div>
+  );
+}
+
+function NotFound() {
+  return (
+    <div className="min-h-screen bg-surface text-white flex items-center justify-center px-8">
+      <div className="max-w-xl">
+        <p className="font-mono text-[10px] uppercase tracking-widest text-primary mb-3">404</p>
+        <h1 className="font-serif text-5xl font-extrabold tracking-tight mb-6">Page not found</h1>
+        <Link to="/" className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-on-primary font-bold hover:bg-primary-container transition-colors">
+          Back to home <ArrowRight className="w-4 h-4" />
+        </Link>
+      </div>
+    </div>
+  );
+}
+
+export default function App() {
+  return (
+    <>
+      <ScrollToTopOnRouteChange />
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/privacy" element={<PrivacyPage />} />
+        <Route path="/terms" element={<TermsPage />} />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+      <CookieConsentBanner />
+    </>
   );
 }
