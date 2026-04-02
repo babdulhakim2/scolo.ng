@@ -172,7 +172,7 @@ const Products = () => {
       desc: "Government project monitoring AI, adopted by Katsina State government to track public works in real-time.",
       imageSrc: "/inspecta.ng.png",
       location: "KATSINA STATE",
-      link: "#",
+      link: "https://inspecta.ng",
       borderColor: "border-primary",
       icon: Landmark,
       accent: "text-primary"
@@ -183,7 +183,7 @@ const Products = () => {
       desc: "Enterprise automation platform for credit tracking, automated reminders, and seamless back-office requisition workflows.",
       imageSrc: "/scolo.live.png",
       location: "LAGOS BUSINESS DISTRICT",
-      link: "#",
+      link: "https://scolo.live",
       borderColor: "border-white/30",
       icon: Mic,
       accent: "text-white"
@@ -194,7 +194,7 @@ const Products = () => {
       desc: "Scalable AI web-agent platforms for enterprise automation. Transforming browser tasks into automated flows.",
       imageSrc: "/scolo.online.png",
       location: "VICTORIA ISLAND",
-      link: "#",
+      link: "https://scolo.online",
       borderColor: "border-outline",
       icon: Globe,
       accent: "text-white"
@@ -226,7 +226,12 @@ const Products = () => {
               <h3 className={`font-serif text-4xl font-bold mb-4 ${p.accent}`}>{p.name}</h3>
               <p className="text-on-surface-variant mb-auto">{p.desc}</p>
               <div className="mt-8 pt-8 border-t border-outline-variant/30">
-                <a href={p.link} className={`flex items-center gap-2 font-mono text-sm uppercase tracking-widest ${p.accent} group-hover:gap-4 transition-all`}>
+                <a
+                  href={p.link}
+                  target="_blank"
+                  rel="noreferrer noopener"
+                  className={`flex items-center gap-2 font-mono text-sm uppercase tracking-widest ${p.accent} group-hover:gap-4 transition-all`}
+                >
                   Protocol Entry <ArrowRight className="w-4 h-4" />
                 </a>
               </div>
