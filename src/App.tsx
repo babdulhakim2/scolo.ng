@@ -1,105 +1,22 @@
-import { motion, AnimatePresence } from "motion/react";
-import { Terminal, ArrowRight, Landmark, Mic, Globe, LayoutGrid, Cpu, Users, Mail, RefreshCw, Loader2 } from "lucide-react";
-import { GoogleGenAI } from "@google/genai";
-import { useState, useEffect } from "react";
+import { motion } from "motion/react";
+import { Terminal, ArrowRight, Landmark, Mic, Globe, LayoutGrid, Cpu } from "lucide-react";
+import { useEffect } from "react";
 import { Link, Route, Routes, useLocation } from "react-router-dom";
 import CookieConsentBanner, { openCookieSettings } from "./components/CookieConsentBanner";
 import PrivacyPage from "./pages/Privacy";
 import TermsPage from "./pages/Terms";
 
-const ProductImage = ({ prompt, alt, location }: { prompt: string; alt: string; location: string }) => {
-  const [imageUrl, setImageUrl] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  const generateImage = async () => {
-    setIsLoading(true);
-    setError(null);
-    try {
-      const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
-      const response = await ai.models.generateContent({
-        model: "gemini-2.5-flash-image",
-        contents: {
-          parts: [
-            {
-              text: `A high-quality, professional, architectural and technical grayscale photograph of: ${prompt}. The style should be brutalist, clean, and grounded in a modern Nigerian context. No sci-fi elements. High contrast, sharp details.`,
-            },
-          ],
-        },
-        config: {
-          imageConfig: {
-            aspectRatio: "16:9",
-          },
-        },
-      });
-
-      let foundImage = false;
-      for (const part of response.candidates?.[0]?.content?.parts || []) {
-        if (part.inlineData) {
-          setImageUrl(`data:image/png;base64,${part.inlineData.data}`);
-          foundImage = true;
-          break;
-        }
-      }
-
-      if (!foundImage) {
-        throw new Error("No image data returned from API");
-      }
-    } catch (err) {
-      console.error("Image generation failed:", err);
-      setError("Failed to generate visual protocol.");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    generateImage();
-  }, [prompt]);
-
+const ProductImage = ({ src, alt, location }: { src: string; alt: string; location: string }) => {
   return (
     <div className="relative w-full aspect-video bg-surface-container-lowest overflow-hidden mb-6 group/img border border-outline-variant/10">
-      <AnimatePresence mode="wait">
-        {isLoading ? (
-          <motion.div 
-            key="loading"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="absolute inset-0 flex flex-col items-center justify-center bg-surface-container-low"
-          >
-            <Loader2 className="w-8 h-8 text-primary animate-spin mb-4" />
-            <span className="font-mono text-[10px] uppercase tracking-widest text-primary animate-pulse">
-              Generating Visual Protocol...
-            </span>
-          </motion.div>
-        ) : error ? (
-          <motion.div 
-            key="error"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center bg-surface-container-low"
-          >
-            <p className="font-mono text-xs text-error mb-4 uppercase tracking-widest">{error}</p>
-            <button 
-              onClick={generateImage}
-              className="flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 transition-colors font-mono text-[10px] uppercase tracking-widest"
-            >
-              <RefreshCw className="w-3 h-3" /> Retry Generation
-            </button>
-          </motion.div>
-        ) : (
-          <motion.img 
-            key="image"
-            initial={{ opacity: 0, scale: 1.1 }}
-            animate={{ opacity: 1, scale: 1 }}
-            src={imageUrl || ""} 
-            alt={alt} 
-            className="w-full h-full object-cover transition-transform duration-1000 group-hover/img:scale-105 grayscale"
-            referrerPolicy="no-referrer"
-          />
-        )}
-      </AnimatePresence>
+      <motion.img
+        initial={{ opacity: 0, scale: 1.03 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.6 }}
+        src={src}
+        alt={alt}
+        className="w-full h-full object-cover transition-transform duration-1000 group-hover/img:scale-105 grayscale"
+      />
 
       {/* Technical Overlay */}
       <div className="absolute inset-0 pointer-events-none z-10">
@@ -120,15 +37,6 @@ const ProductImage = ({ prompt, alt, location }: { prompt: string; alt: string; 
       </div>
       <div className="absolute inset-0 bg-gradient-to-t from-surface/80 to-transparent opacity-80 pointer-events-none" />
       
-      {!isLoading && !error && (
-        <button 
-          onClick={generateImage}
-          className="absolute bottom-4 left-4 z-20 p-2 bg-black/40 hover:bg-black/60 backdrop-blur-sm transition-all opacity-0 group-hover/img:opacity-100"
-          title="Regenerate Visual"
-        >
-          <RefreshCw className="w-3 h-3 text-white/60" />
-        </button>
-      )}
     </div>
   );
 };
@@ -262,7 +170,7 @@ const Products = () => {
       name: "INSPECTA.NG",
       tag: "LIVE ACROSS 34 LGAs",
       desc: "Government project monitoring AI, adopted by Katsina State government to track public works in real-time.",
-      prompt: "A realistic grayscale photograph of a road construction site in Katsina, Nigeria, with workers and heavy machinery, architectural style, technical precision, high contrast.",
+      imageSrc: "/inspecta.ng.png",
       location: "KATSINA STATE",
       link: "#",
       borderColor: "border-primary",
@@ -273,7 +181,7 @@ const Products = () => {
       name: "Scolo Live",
       tag: "LIVE",
       desc: "Enterprise automation platform for credit tracking, automated reminders, and seamless back-office requisition workflows.",
-      prompt: "A realistic grayscale photograph of a modern corporate back-office in Nigeria, with digital dashboards showing financial charts and automated task lists, professional architectural setting, technical precision.",
+      imageSrc: "/scolo.live.png",
       location: "LAGOS BUSINESS DISTRICT",
       link: "#",
       borderColor: "border-white/30",
@@ -284,7 +192,7 @@ const Products = () => {
       name: "Scolo Online",
       tag: "IN-MARKET",
       desc: "Scalable AI web-agent platforms for enterprise automation. Transforming browser tasks into automated flows.",
-      prompt: "A realistic grayscale photograph of a modern tech office in Victoria Island, Lagos, with workstations and servers, architectural brutalism, professional setting.",
+      imageSrc: "/scolo.online.png",
       location: "VICTORIA ISLAND",
       link: "#",
       borderColor: "border-outline",
@@ -313,7 +221,7 @@ const Products = () => {
                 <p.icon className="text-outline w-6 h-6" />
               </div>
               
-              <ProductImage prompt={p.prompt} alt={p.name} location={p.location} />
+              <ProductImage src={p.imageSrc} alt={p.name} location={p.location} />
 
               <h3 className={`font-serif text-4xl font-bold mb-4 ${p.accent}`}>{p.name}</h3>
               <p className="text-on-surface-variant mb-auto">{p.desc}</p>
